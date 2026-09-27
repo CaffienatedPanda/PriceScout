@@ -75,15 +75,20 @@ export function extractJsonBlock(text: string): {
 export async function runPriceResearch(
   apiKey: string,
   itemQuery: string,
+  horizonDays?: number,
 ): Promise<PriceResearchResult> {
   const ai = new GoogleGenAI({ apiKey });
+
+  const horizonNote = horizonDays
+    ? ` Focus specifically on listings sold within the last ${horizonDays} days — older sales are less relevant to current market value.`
+    : "";
 
   const response = await ai.models.generateContent({
     model: "gemini-3.8-flash",
     contents: [
       {
         role: "user",
-        parts: [{ text: `${SYSTEM_PROMPT}\n\nItem: ${itemQuery}` }],
+        parts: [{ text: `${SYSTEM_PROMPT}${horizonNote}\n\nItem: ${itemQuery}` }],
       },
     ],
     config: {

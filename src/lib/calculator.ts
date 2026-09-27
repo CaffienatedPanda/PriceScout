@@ -41,13 +41,59 @@ export type CalculatorResult = {
   verdict: "worthwhile" | "marginal" | "skip";
 };
 
-export const PLATFORM_PRESETS: Record<string, FeeModel> = {
+export type MarketplaceKey =
+  | "ebay"
+  | "mercari"
+  | "poshmark"
+  | "depop"
+  | "etsy"
+  | "amazon"
+  | "facebook"
+  | "whatnot"
+  | "stockx"
+  | "goat"
+  | "custom";
+
+export const PLATFORM_PRESETS: Record<MarketplaceKey, FeeModel> = {
   ebay: { platformFeePercent: 13.25, paymentFixedFee: 0.3, paymentFeePercent: 2.9 },
-  poshmark: { platformFeePercent: 20, paymentFixedFee: 0, paymentFeePercent: 0 },
   mercari: { platformFeePercent: 10, paymentFixedFee: 0.3, paymentFeePercent: 2.9 },
+  poshmark: { platformFeePercent: 20, paymentFixedFee: 0, paymentFeePercent: 0 },
+  depop: { platformFeePercent: 10, paymentFixedFee: 0.3, paymentFeePercent: 3 },
+  etsy: { platformFeePercent: 6.5, paymentFixedFee: 0.25, paymentFeePercent: 3 },
+  amazon: { platformFeePercent: 15, paymentFixedFee: 0, paymentFeePercent: 0 },
   facebook: { platformFeePercent: 5, paymentFixedFee: 0, paymentFeePercent: 0 },
+  whatnot: { platformFeePercent: 8, paymentFixedFee: 0.3, paymentFeePercent: 2.9 },
+  stockx: { platformFeePercent: 10, paymentFixedFee: 0, paymentFeePercent: 3 },
+  goat: { platformFeePercent: 9.5, paymentFixedFee: 0, paymentFeePercent: 2.9 },
   custom: { platformFeePercent: 0, paymentFixedFee: 0, paymentFeePercent: 0 },
 };
+
+export const MARKETPLACES: { key: MarketplaceKey; label: string }[] = [
+  { key: "ebay", label: "eBay" },
+  { key: "mercari", label: "Mercari" },
+  { key: "poshmark", label: "Poshmark" },
+  { key: "depop", label: "Depop" },
+  { key: "etsy", label: "Etsy" },
+  { key: "amazon", label: "Amazon" },
+  { key: "facebook", label: "FB Marketplace" },
+  { key: "whatnot", label: "Whatnot" },
+  { key: "stockx", label: "StockX" },
+  { key: "goat", label: "GOAT" },
+  { key: "custom", label: "Custom" },
+];
+
+/**
+ * Fee presets above are reasonable public estimates, not guarantees — actual
+ * marketplace fees change and vary by category/seller level. Merge in a
+ * user-provided override (see src/lib/settings.ts) to correct them per
+ * marketplace.
+ */
+export function getEffectiveFees(
+  key: MarketplaceKey,
+  override?: Partial<FeeModel>,
+): FeeModel {
+  return { ...PLATFORM_PRESETS[key], ...override };
+}
 
 export function calculate(input: CalculatorInput): CalculatorResult {
   const { itemCost, salePrice, shippingCost, miscCost, fees } = input;

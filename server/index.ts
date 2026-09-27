@@ -11,7 +11,7 @@ app.use(express.json());
 const PORT = process.env.PORT ? Number(process.env.PORT) : 8787;
 
 app.post("/api/research-price", async (req, res) => {
-  const { query } = req.body ?? {};
+  const { query, horizonDays } = req.body ?? {};
   if (!query || typeof query !== "string") {
     return res.status(400).json({ error: 'Missing "query" string in request body.' });
   }
@@ -25,7 +25,11 @@ app.post("/api/research-price", async (req, res) => {
   }
 
   try {
-    const result = await runPriceResearch(apiKey, query);
+    const result = await runPriceResearch(
+      apiKey,
+      query,
+      typeof horizonDays === "number" ? horizonDays : undefined,
+    );
     res.json(result);
   } catch (err) {
     console.error("[research-price]", err);

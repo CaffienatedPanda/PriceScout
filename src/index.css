@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+/*
+ * PriceScout design system: a dark "field terminal" look aimed at the
+ * reselling community — near-black surfaces, a single mint-green accent,
+ * bold italic condensed display type, and tracked-out mono labels.
+ * These become Tailwind utilities via v4's @theme (bg-bg, text-accent,
+ * font-display, etc.) so components can stay in plain Tailwind classes.
+ */
+@theme {
+  --color-bg: #0b0b0d;
+  --color-surface: #17171a;
+  --color-surface-2: #1f1f23;
+  --color-border: #2a2a2f;
+  --color-ink: #f4f4f5;
+  --color-muted: #8b8b93;
+  --color-faint: #57575e;
+  --color-accent: #22e08a;
+  --color-accent-dim: #143824;
+  --color-danger: #ef4444;
+  --color-warn: #f5a623;
+
+  --font-display: "Archivo", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
 html,
 body,
 #root {
@@ -7,6 +31,8 @@ body,
 }
 
 body {
+  background: var(--color-bg);
+  color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
   font-family:
     ui-sans-serif,
@@ -15,4 +41,37 @@ body {
     "Segoe UI",
     Roboto,
     sans-serif;
+}
+
+input,
+select {
+  color-scheme: dark;
+}
+
+/* We draw our own numeric affordances, so hide the native spinner. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Small tracked-out uppercase mono label, used for every micro-heading. */
+.label {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.6875rem;
+  color: var(--color-muted);
+}
+
+/* Big bold italic condensed section headings ("MARKET VALUE", etc). */
+.display-heading {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
 }
