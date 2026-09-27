@@ -104,7 +104,7 @@ export function SettingsScreen() {
                       step="0.1"
                       value={effective.platformFeePercent}
                       onChange={(e) => handleFeeChange(m.key, e.target.value)}
-                      className="w-16 rounded-md border border-border bg-surface-2 px-2 py-1 text-right font-mono text-sm text-ink focus:outline-none focus:ring-1 focus:ring-accent"
+                      className="w-20 rounded-md border border-border bg-surface-2 px-2 py-1.5 text-right font-mono text-sm text-ink focus:outline-none focus:ring-1 focus:ring-accent"
                     />
                     <span className="text-xs text-faint">%</span>
                   </div>

@@ -48,6 +48,19 @@ select {
   color-scheme: dark;
 }
 
+/*
+ * iOS Safari zooms the page whenever a focused form control computes to
+ * under 16px, which felt broken on a "native app" feeling tool. Force every
+ * input/select/textarea to 16px regardless of the Tailwind text-size utility
+ * applied to it; layouts were built with that as the practical minimum
+ * anyway, so this doesn't change how anything looks.
+ */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
 /* We draw our own numeric affordances, so hide the native spinner. */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {

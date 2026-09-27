@@ -20,22 +20,26 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-bg pb-20 text-ink">
-      <AppHeader />
+    <div className="min-h-screen bg-bg md:flex md:justify-center md:bg-surface-2/60 md:px-6 md:py-10">
+      <div className="flex min-h-screen w-full flex-col bg-bg text-ink md:min-h-[calc(100vh-5rem)] md:max-w-md md:overflow-hidden md:rounded-2xl md:border md:border-border md:shadow-2xl md:shadow-black/50">
+        <AppHeader />
 
-      {tab === "research" && <ResearchScreen onSendToProfit={sendToProfit} />}
-      {tab === "profit" && (
-        <ProfitScreen
-          key={handoffKey}
-          initialQuery={handoff?.query}
-          initialSalePrice={handoff?.salePrice}
-          initialItemCost={handoff?.itemCost}
-        />
-      )}
-      {tab === "portfolio" && <PortfolioScreen />}
-      {tab === "settings" && <SettingsScreen />}
+        <div className="flex-1">
+          {tab === "research" && <ResearchScreen onSendToProfit={sendToProfit} />}
+          {tab === "profit" && (
+            <ProfitScreen
+              key={handoffKey}
+              initialQuery={handoff?.query}
+              initialSalePrice={handoff?.salePrice}
+              initialItemCost={handoff?.itemCost}
+            />
+          )}
+          {tab === "portfolio" && <PortfolioScreen />}
+          {tab === "settings" && <SettingsScreen />}
+        </div>
 
-      <BottomNav active={tab} onChange={setTab} />
+        <BottomNav active={tab} onChange={setTab} />
+      </div>
     </div>
   );
 }
