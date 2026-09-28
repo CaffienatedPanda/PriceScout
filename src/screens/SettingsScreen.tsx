@@ -14,6 +14,7 @@ const HORIZON_OPTIONS: { value: `${SearchHorizonDays}`; label: string }[] = [
 export function SettingsScreen() {
   const [settings, setSettings] = useState<BusinessSettings>(() => loadSettings());
   const [savedFlash, setSavedFlash] = useState(false);
+  const [confirmingReset, setConfirmingReset] = useState(false);
 
   function handleSave() {
     saveSettings(settings);
@@ -33,7 +34,13 @@ export function SettingsScreen() {
   }
 
   function handleReset() {
+    if (!confirmingReset) {
+      setConfirmingReset(true);
+      setTimeout(() => setConfirmingReset(false), 3000);
+      return;
+    }
     setSettings((s) => ({ ...s, feeOverrides: {} }));
+    setConfirmingReset(false);
   }
 
   return (
@@ -85,10 +92,12 @@ export function SettingsScreen() {
             <button
               type="button"
               onClick={handleReset}
-              className="label !text-[10px] flex items-center gap-1 text-faint"
+              className={`label !text-[10px] flex items-center gap-1 ${
+                confirmingReset ? "text-danger" : "text-faint"
+              }`}
             >
               <RotateCcw className="h-3 w-3" />
-              Reset to Defaults
+              {confirmingReset ? "Tap again to confirm" : "Reset to Defaults"}
             </button>
           </div>
           <div className="divide-y divide-border rounded-lg border border-border bg-surface">

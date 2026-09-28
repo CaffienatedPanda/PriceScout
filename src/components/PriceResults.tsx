@@ -19,6 +19,11 @@ export function PriceResults({ result, onSendToProfit }: Props) {
 
       {result.notes && <p className="mt-3 text-sm leading-snug text-muted">{result.notes}</p>}
 
+      <p className="mt-3 text-xs leading-snug text-faint">
+        AI-generated estimate from public listings — not verified sold data. Use as a starting
+        point, not gospel.
+      </p>
+
       {onSendToProfit && (
         <button
           type="button"

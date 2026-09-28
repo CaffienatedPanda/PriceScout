@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Download, Trash2, ArrowUpRight } from "lucide-react";
+import { Download, Trash2, ArrowUpRight, Pencil, Check } from "lucide-react";
 import { ScreenHeader } from "../components/ScreenHeader";
 import { StatTile } from "../components/StatTile";
 import {
@@ -15,6 +15,8 @@ type ViewTab = "flips" | "watchlist";
 export function PortfolioScreen() {
   const [items, setItems] = useState<SavedItem[]>(() => loadSavedItems());
   const [view, setView] = useState<ViewTab>("flips");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editCostValue, setEditCostValue] = useState("");
 
   const sourced = items.filter((i) => i.status === "sourced");
   const watching = items.filter((i) => i.status === "watching");
@@ -38,13 +40,37 @@ export function PortfolioScreen() {
     setItems(updateSavedItem(id, { status: "sourced" }));
   }
 
+  function startEditCost(item: SavedItem) {
+    setEditingId(item.id);
+    setEditCostValue(String(item.itemCost));
+  }
+
+  function saveEditCost(item: SavedItem) {
+    const newCost = parseFloat(editCostValue);
+    if (!isNaN(newCost) && newCost >= 0) {
+      // Fees are computed off sale price, not cost, so a cost change moves
+      // net profit dollar-for-dollar and margin follows from that.
+      const newNetProfit = item.netProfit + (item.itemCost - newCost);
+      const newMarginPercent =
+        item.listedPrice > 0 ? (newNetProfit / item.listedPrice) * 100 : 0;
+      setItems(
+        updateSavedItem(item.id, {
+          itemCost: newCost,
+          netProfit: newNetProfit,
+          marginPercent: newMarginPercent,
+        }),
+      );
+    }
+    setEditingId(null);
+  }
+
   function handleExportCsv() {
-    const csv = exportItemsToCsv(items);
+    const csv = exportItemsToCsv(visible);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "pricescout-portfolio.csv";
+    a.download = `pricescout-${view}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -60,7 +86,7 @@ export function PortfolioScreen() {
             className="label !text-[10px] flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-2 text-muted"
           >
             <Download className="h-3 w-3" />
-            Export CSV
+            Export {view === "flips" ? "Flips" : "Watchlist"}
           </button>
         }
       />
@@ -122,7 +148,40 @@ export function PortfolioScreen() {
 
                 <div className="mt-3 grid grid-cols-3 gap-2 border-t border-border pt-2 text-xs">
                   <MiniStat label="Market" value={item.marketplace} />
-                  <MiniStat label="Cost" value={`$${item.itemCost.toFixed(0)}`} />
+                  {editingId === item.id ? (
+                    <div>
+                      <p className="label !text-[9px]">Cost</p>
+                      <div className="mt-0.5 flex items-center gap-1">
+                        <span className="text-faint">$</span>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          step="0.01"
+                          autoFocus
+                          value={editCostValue}
+                          onChange={(e) => setEditCostValue(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && saveEditCost(item)}
+                          className="w-14 rounded border border-border bg-surface-2 px-1 py-0.5 font-mono text-ink focus:outline-none focus:ring-1 focus:ring-accent"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => saveEditCost(item)}
+                          className="text-accent"
+                          aria-label="Save cost"
+                        >
+                          <Check className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => startEditCost(item)} className="text-left">
+                      <p className="label !text-[9px] flex items-center gap-1">
+                        Cost
+                        <Pencil className="h-2.5 w-2.5" />
+                      </p>
+                      <p className="mt-0.5 font-mono text-ink">${item.itemCost.toFixed(0)}</p>
+                    </button>
+                  )}
                   <MiniStat
                     label="Profit"
                     value={`$${item.netProfit.toFixed(0)}`}
